@@ -12,7 +12,7 @@ import { db } from "./db";
 import { users, userAssessments } from "./db/schema";
 import { eq } from "drizzle-orm";
 import { storage } from "./storage";
-import { syncUserAssessmentToGHL } from "./ghl";
+import { syncUserAssessmentToGHL, batchSyncRecentAssessments } from "./ghl";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Replit Auth (OAuth)
@@ -455,7 +455,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // GHL Batch Sync - Daily sync of all users with recent assessment updates
-  app.post('/api/ghl/batch-sync', async (req, res) => {
+  app.post('/api/ghl/batch-sync', isAuthenticated, async (req, res) => {
     try {
       // This endpoint can be called by a cron job or scheduled task
       // Syncs all users with assessments updated in the last 24 hours
@@ -463,21 +463,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
 
-      const recentAssessments = await db.select()
+      const recentAssessments = await db.select({
+        email: users.email,
+        assessment: userAssessments,
+      })
         .from(userAssessments)
-        .innerJoin(users, eq(userAssessments.userId, users.id));
+        .innerJoin(users, eq(userAssessments.userId, users.id))
+        .where(sql`${userAssessments.updatedAt} >= ${yesterday}`);
 
-      // Filter by updated date and prepare data
+      // Filter out null emails and prepare data
       const usersToSync = recentAssessments
-        .filter(item => new Date(item.user_assessments.updatedAt) >= yesterday)
+        .filter(item => item.email)
         .map(item => ({
-          email: item.users.email,
-          assessment: item.user_assessments
-        }))
-        .filter(u => u.email);
+          email: item.email!,
+          assessment: item.assessment
+        }));
 
-      // Import batch sync function
-      const { batchSyncRecentAssessments } = await import('./ghl');
       const result = await batchSyncRecentAssessments(usersToSync);
 
       res.json({

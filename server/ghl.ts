@@ -125,17 +125,17 @@ export async function updateContactAssessmentData(
  * Generate assessment summary from user assessment data
  */
 export function generateAssessmentSummary(assessment: any): AssessmentSummary {
-  const daily10Entries = Array.isArray(assessment.daily_10) ? assessment.daily_10 : [];
+  const daily10Entries = Array.isArray(assessment.daily10) ? assessment.daily10 : [];
   
   return {
     intakeCompleted: !!assessment.intake,
-    beliefMapCompleted: !!assessment.belief_map,
-    triangleShiftCompleted: !!assessment.triangle_shift,
-    sixFearsCompleted: !!assessment.six_fears,
-    feelsDialCompleted: !!assessment.feelings_dial,
-    hillOverlayCompleted: !!assessment.hill_overlay,
+    beliefMapCompleted: !!assessment.beliefMap,
+    triangleShiftCompleted: !!assessment.triangleShift,
+    sixFearsCompleted: !!assessment.sixFears,
+    feelsDialCompleted: !!assessment.feelingsDial,
+    hillOverlayCompleted: !!assessment.hillOverlay,
     daily10Count: daily10Entries.length,
-    lastAssessmentDate: assessment.updatedAt || new Date().toISOString(),
+    lastAssessmentDate: assessment.updatedAt ? new Date(assessment.updatedAt).toISOString() : new Date().toISOString(),
     totalAssessments: 1, // Each user has one main assessment record
   };
 }
