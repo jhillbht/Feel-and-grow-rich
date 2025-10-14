@@ -1,7 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { ThemeToggle } from "./theme-toggle";
 import { 
-  Sparkles, 
   Triangle, 
   Heart, 
   Smile, 
@@ -12,6 +11,7 @@ import {
   TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoImage from "@assets/SoA Icon@4x_1760406141314.png";
 
 const navItems = [
   { path: "/", label: "Home", icon: Home },
@@ -34,11 +34,12 @@ export function AppNav() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
             <Link href="/">
-              <div className="flex items-center gap-2 font-heading font-semibold text-xl cursor-pointer" data-testid="link-home">
-                <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <span className="hidden sm:inline">Feel and Grow Rich</span>
+              <div className="flex items-center cursor-pointer" data-testid="link-home">
+                <img 
+                  src={logoImage} 
+                  alt="Science of Abundance" 
+                  className="h-10 w-10 object-contain"
+                />
               </div>
             </Link>
             

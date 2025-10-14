@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import logoImage from "@assets/SoA Icon@4x_1760406141314.png";
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
@@ -77,13 +77,14 @@ export default function AuthPage() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-            <Sparkles className="w-8 h-8 text-primary" />
+          <div className="inline-flex items-center justify-center mb-6">
+            <img 
+              src={logoImage} 
+              alt="Science of Abundance" 
+              className="h-20 w-20 object-contain"
+            />
           </div>
-          <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
-            Feel and Grow Rich
-          </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-lg">
             Your journey to wealth, worthiness & abundance
           </p>
         </div>
