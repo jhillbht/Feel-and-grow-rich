@@ -20,8 +20,8 @@ export function AIInsights() {
   const aiMutation = useMutation({
     mutationFn: async (userPrompt: string) => {
       const res = await apiRequest("POST", "/api/respond", {
-        sessionState: currentSession,
-        prompt: userPrompt,
+        context: currentSession,
+        question: userPrompt,
       });
       return await res.json();
     },
