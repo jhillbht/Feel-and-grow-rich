@@ -8,6 +8,7 @@ import { SessionProvider } from "@/lib/session-context";
 import { AppNav } from "@/components/app-nav";
 import { AIInsights } from "@/components/ai-insights";
 import Home from "@/pages/home";
+import AuthPage from "@/pages/auth";
 import IntakeWizard from "@/pages/intake-wizard";
 import BeliefMapper from "@/pages/belief-mapper";
 import TriangleShift from "@/pages/triangle-shift";
@@ -22,6 +23,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/auth" component={AuthPage} />
       <Route path="/intake" component={IntakeWizard} />
       <Route path="/belief-mapper" component={BeliefMapper} />
       <Route path="/triangle-shift" component={TriangleShift} />

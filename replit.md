@@ -110,15 +110,17 @@ shared/
 ```
 
 ## Recent Changes
-- 2025-10-14: Complete MVP implementation & Rebranding to "Feel and Grow Rich"
+- 2025-10-14: Complete MVP implementation & Rebranding
   - All 8 transformative tools fully functional
   - Backend API with session management and persistence
   - OpenAI integration for AI-powered wealth consciousness insights
-  - JSON and Excel export functionality
+  - PDF, Excel, and JSON export functionality
   - End-to-end testing completed successfully
   - Session data hydration and persistence across page reloads
-  - Fixed critical apiRequest JSON parsing bug
-  - Rebranded from mental health focus to wealth, worthiness & abundance
+  - Rebranded to "Feel and Grow Rich" with Science of Abundance visual identity
+  - Applied earth tone color palette (terracotta, sage, teal, amber)
+  - Updated typography to Helvetica Neue for ancient wisdom aesthetic
+  - Added Supabase authentication and PostgreSQL database integration (in progress)
 
 ## User Preferences
 - Rich, empowering visual design with Inter/Lexend fonts
