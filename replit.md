@@ -7,13 +7,13 @@ A comprehensive web application providing transformative tools and assessments f
 
 ### Technology Stack
 - **Frontend**: React 18, TypeScript, Wouter (routing), TanStack Query
-- **Backend**: Node.js, Express, Express-Session
+- **Backend**: Node.js, Express, Passport.js
 - **Database**: PostgreSQL (via Supabase/DATABASE_URL), Drizzle ORM
-- **Authentication**: bcrypt password hashing with session-based auth
+- **Authentication**: Replit Auth (OAuth) - supports Google, GitHub, X, Apple, email/password
 - **Styling**: Tailwind CSS, Shadcn UI components
 - **AI Integration**: OpenAI Responses API (via Replit AI Integrations)
 - **Data Export**: xlsx (Excel), pdfkit (PDF), JSON
-- **Storage**: Dual storage - PostgreSQL for users/auth, In-memory (MemStorage) for legacy session data with JSON file persistence
+- **Storage**: PostgreSQL for users, user assessments, and session management
 
 ### Design System (Science of Abundance Visual Identity)
 - **Color Palette**: Earth tones - Terracotta (#8B6B47) primary, Sage (#6B8E6B) success, Teal (#4A7C7E) info, Amber (#C4A661) accent
@@ -70,29 +70,31 @@ A comprehensive web application providing transformative tools and assessments f
 
 ### Data Model
 PostgreSQL schemas in `server/db/schema.ts`:
-- **Users table**: id (UUID), email, password (bcrypt hashed), name, timestamps
-- **Sessions table**: id (UUID), user_id (FK), timestamps, JSONB columns for all assessment data
+- **Users table**: id (VARCHAR/UUID), email, oauth_sub (OAuth subject), firstName, lastName, profileImageUrl, timestamps
+- **userAssessments table**: id (UUID), userId (FK), timestamps, JSONB columns for all assessment data
+- **sessions table**: Passport session storage (managed by connect-pg-simple)
 - Assessment data stored in JSONB columns: intake, belief_map, triangle_shift, six_fears, feelings_dial, hill_overlay, daily_10, ai_interactions
 
 Legacy in-memory schemas in `shared/schema.ts`:
-- Session schema with all assessment data
+- Session schema with all assessment data (kept for backwards compatibility)
 - Individual assessment schemas with validation
 - TypeScript types for type safety
 - Zod validation schemas
 
 ### API Routes
 
-**Authentication:**
-- `POST /api/auth/signup` - Create new user account with bcrypt password hashing
-- `POST /api/auth/signin` - Authenticate user and create session
-- `POST /api/auth/signout` - Destroy user session
-- `GET /api/auth/me` - Get current authenticated user
+**Authentication (Replit Auth OAuth):**
+- `GET /auth/signin` - Initiate OAuth flow with provider selection
+- `GET /auth/callback` - OAuth callback handler
+- `GET /auth/signout` - Destroy OAuth session
+- `GET /api/auth/user` - Get current authenticated user
+- `GET /api/auth/me` - Legacy endpoint for current user
 
-**Sessions:**
-- `POST /api/sessions` - Create new session
-- `GET /api/sessions/:id` - Retrieve session data
-- `PATCH /api/sessions/:id` - Update session data
-- `DELETE /api/sessions/:id` - Delete session
+**User Assessments (Sessions):**
+- `POST /api/sessions` - Create new user assessment session (authenticated)
+- `GET /api/sessions/:id` - Retrieve user assessment data (authenticated)
+- `PATCH /api/sessions/:id` - Update user assessment data (authenticated)
+- `DELETE /api/sessions/:id` - Delete user assessment session (authenticated)
 
 **AI & Export:**
 - `POST /api/respond` - AI-powered wealth consciousness guidance (OpenAI)
@@ -130,6 +132,24 @@ shared/
 ```
 
 ## Recent Changes
+- 2025-10-14: OAuth Migration (Replit Auth) & Kajabi Integration Fix
+  - **Replaced email/password auth with Replit Auth OAuth** to fix production authentication issues
+  - **OAuth Providers**: Google, GitHub, X, Apple, email/password fallback
+  - **Database Schema Updates**:
+    - Added oauth_sub column to users table for OAuth subject linking
+    - Renamed sessions table to userAssessments for clarity
+    - Passport session storage via connect-pg-simple
+  - **Kajabi Webhook Compatibility**:
+    - Webhook creates placeholder users with email
+    - OAuth login automatically links accounts by matching email
+    - oauth_sub populated on first OAuth login
+    - Seamless account linking prevents duplicate users
+  - **Frontend Updates**:
+    - New OAuth login page with provider icons
+    - useAuth hook integrated with Replit Auth
+    - App.tsx guards routes with authentication check
+    - Removed ProtectedRoute component (replaced with Router-level auth)
+
 - 2025-10-14: Complete MVP implementation, Rebranding & Database Migration
   - All 8 transformative tools fully functional
   - Backend API with session management and persistence
@@ -144,13 +164,6 @@ shared/
     - Earth tone color palette: Terracotta (#8B6B47), Sage (#6B8E6B), Teal (#4A7C7E), Amber (#C4A661)
     - Typography: Helvetica Neue replacing Inter/Lexend for ancient wisdom aesthetic
     - Updated all UI components with new brand colors
-  - **Database & Authentication Migration**:
-    - PostgreSQL database via Supabase (DATABASE_URL)
-    - Users table with bcrypt password hashing
-    - Sessions table with JSONB columns for flexible data storage
-    - Express-session middleware for session management
-    - Complete auth flow: signup, signin, signout, current user endpoints
-    - Session-based authentication with secure cookies
 
 ## User Preferences
 - Rich, empowering visual design with Inter/Lexend fonts
@@ -168,33 +181,45 @@ shared/
 When a student enrolls in your Kajabi course, their account is automatically created in the app:
 
 1. **Kajabi sends webhook** with student name & email
-2. **App creates account** with secure random password
-3. **Student gets access** to all 8 assessment tools
+2. **App creates placeholder user** (no password needed - OAuth only)
+3. **Student signs in via OAuth** (Google, GitHub, etc.) to complete account setup
+4. **Account automatically linked** on first OAuth login by matching email
 
 **Setup Instructions:** See `KAJABI_SETUP.md` for complete configuration guide.
 
 **Webhook Features:**
 - ✅ Duplicate prevention (checks if user already exists)
 - ✅ Email normalization (lowercase, trimmed)
-- ✅ Secure password generation (12 chars, bcrypt hashed)
+- ✅ Placeholder account creation for OAuth linking
+- ✅ Auto-linking on first OAuth login via oauth_sub column
 - ✅ Auto-logging of enrollments
 
-**Next Step:** Add email service (Resend, SendGrid, etc.) to automatically send login credentials to students.
+**How OAuth Linking Works:**
+1. Kajabi webhook creates user with email (no oauth_sub)
+2. Student clicks OAuth login (Google, GitHub, etc.)
+3. System finds existing user by email
+4. Updates user record with oauth_sub for future logins
+5. Student can now access all 8 assessment tools
 
 ## Environment Variables
 **Required for Production:**
 - `DATABASE_URL` - PostgreSQL connection string (via Supabase)
-- `SESSION_SECRET` - Secure secret for session signing (32+ random characters)
+- `SESSION_SECRET` - Secure secret for Passport session signing (32+ random characters)
 - `SUPABASE_URL` - Supabase project URL
 - `SUPABASE_ANON_KEY` - Supabase anonymous key
+- `REPLIT_DOMAINS` - Auto-provided by Replit for OAuth callback URLs
 
-**Note:** The application uses connect-pg-simple for persistent session storage in PostgreSQL, ensuring session data survives server restarts and scales across instances.
+**Note:** 
+- Replit Auth automatically manages OAuth configuration via REPL_ID and REPLIT_DOMAINS
+- Session storage uses connect-pg-simple (PostgreSQL) for persistence across deployments
+- OAuth sessions survive server restarts and scale across instances
 
 ## Development Status
 - ✅ Phase 1: Schema & Frontend Complete
 - ✅ Phase 2: Backend Implementation Complete
 - ✅ Phase 3: Integration & Testing Complete
-- ✅ Authentication & Database Migration Complete
+- ✅ OAuth Authentication Migration Complete
+- ✅ Kajabi Integration Verified
 - ✅ MVP Ready for Production
 
 ## Key Implementation Details
