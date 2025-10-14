@@ -35777,5 +35777,26 @@
     "id": "9482ebab-1ea7-4557-84fb-829de6d9251e",
     "createdAt": "2025-10-14T01:49:21.433Z",
     "updatedAt": "2025-10-14T01:49:21.433Z"
+  },
+  {
+    "id": "a7ecb00e-d66e-4612-94bf-070b3f30dd26",
+    "createdAt": "2025-10-14T04:45:46.552Z",
+    "updatedAt": "2025-10-14T04:45:46.552Z"
+  },
+  {
+    "id": "3f9c33d5-66f8-41ae-81cf-9535bfc135c3",
+    "createdAt": "2025-10-14T04:46:40.609Z",
+    "updatedAt": "2025-10-14T04:46:40.609Z"
+  },
+  {
+    "id": "c0500a77-5793-4099-aa94-852f45a5ad0e",
+    "createdAt": "2025-10-14T04:47:31.048Z",
+    "updatedAt": "2025-10-14T04:48:11.349Z",
+    "triangleShift": {
+      "currentRole": "victim",
+      "situation": "Test situation",
+      "transformedRole": "creator",
+      "newPerspective": "Test perspective"
+    }
   }
 ]
