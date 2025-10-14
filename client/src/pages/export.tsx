@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileJson, FileSpreadsheet, Calendar } from "lucide-react";
+import { Download, FileJson, FileSpreadsheet, Calendar, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ExportPage() {
@@ -80,6 +80,42 @@ export default function ExportPage() {
     }
   };
 
+  const handleExportPDF = async () => {
+    setIsExporting(true);
+    try {
+      toast({
+        title: "Export Started",
+        description: "Your PDF export is being prepared...",
+      });
+      
+      const response = await fetch("/api/export/pdf");
+      if (!response.ok) throw new Error("Export failed");
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `feel-and-grow-rich-export-${Date.now()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Export Complete",
+        description: "Your PDF file has been downloaded.",
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "There was an error exporting your data.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -108,11 +144,85 @@ export default function ExportPage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card className="hover-elevate active-elevate-2 transition-all">
             <CardHeader>
               <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <FileJson className="w-6 h-6 text-primary" />
+                <FileText className="w-6 h-6 text-primary" />
+              </div>
+              <CardTitle className="font-heading">PDF Export</CardTitle>
+              <CardDescription>
+                Professional document format perfect for sharing with advisors
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex items-center justify-between">
+                  <span>Format</span>
+                  <span className="font-medium">.pdf</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Use case</span>
+                  <span className="font-medium">Sharing</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Size</span>
+                  <span className="font-medium">~15-30 KB</span>
+                </div>
+              </div>
+              <Button 
+                onClick={handleExportPDF} 
+                disabled={isExporting} 
+                className="w-full"
+                data-testid="button-export-pdf"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download PDF
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover-elevate active-elevate-2 transition-all">
+            <CardHeader>
+              <div className="w-12 h-12 rounded-lg bg-chart-2/10 flex items-center justify-center mb-4">
+                <FileSpreadsheet className="w-6 h-6 text-chart-2" />
+              </div>
+              <CardTitle className="font-heading">Excel Export</CardTitle>
+              <CardDescription>
+                Comprehensive spreadsheet with all assessment details across multiple sheets
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex items-center justify-between">
+                  <span>Format</span>
+                  <span className="font-medium">.xlsx</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Use case</span>
+                  <span className="font-medium">Data analysis</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Size</span>
+                  <span className="font-medium">~10-20 KB</span>
+                </div>
+              </div>
+              <Button 
+                onClick={handleExportExcel} 
+                disabled={isExporting} 
+                className="w-full"
+                data-testid="button-export-excel"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Excel
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="hover-elevate active-elevate-2 transition-all">
+            <CardHeader>
+              <div className="w-12 h-12 rounded-lg bg-chart-3/10 flex items-center justify-center mb-4">
+                <FileJson className="w-6 h-6 text-chart-3" />
               </div>
               <CardTitle className="font-heading">JSON Export</CardTitle>
               <CardDescription>
@@ -142,43 +252,6 @@ export default function ExportPage() {
               >
                 <Download className="w-4 h-4 mr-2" />
                 Download JSON
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="hover-elevate active-elevate-2 transition-all">
-            <CardHeader>
-              <div className="w-12 h-12 rounded-lg bg-chart-2/10 flex items-center justify-center mb-4">
-                <FileSpreadsheet className="w-6 h-6 text-chart-2" />
-              </div>
-              <CardTitle className="font-heading">Excel Export</CardTitle>
-              <CardDescription>
-                Spreadsheet format for easy viewing and analysis in Excel or Google Sheets
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center justify-between">
-                  <span>Format</span>
-                  <span className="font-medium">.xlsx</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Use case</span>
-                  <span className="font-medium">Data analysis</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Size</span>
-                  <span className="font-medium">~10-20 KB</span>
-                </div>
-              </div>
-              <Button 
-                onClick={handleExportExcel} 
-                disabled={isExporting} 
-                className="w-full"
-                data-testid="button-export-excel"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Excel
               </Button>
             </CardContent>
           </Card>
