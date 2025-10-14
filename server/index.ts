@@ -15,6 +15,9 @@ app.use(express.urlencoded({ extended: false }));
 // PostgreSQL session store
 const PgStore = connectPgSimple(session);
 
+// Detect if running in production (Replit deployment or NODE_ENV=production)
+const isProduction = process.env.NODE_ENV === "production" || !!process.env.REPLIT_DEPLOYMENT;
+
 // Session middleware with persistent store
 app.use(
   session({
@@ -26,9 +29,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction, // Enable secure cookies in production/deployment
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+      sameSite: isProduction ? "lax" : "lax", // CSRF protection
     },
   })
 );
