@@ -1,48 +1,52 @@
-# Design Guidelines: Feel and Grow Rich - Wealth, Worthiness & Personal Development Platform
+# Design Guidelines: Feel and Grow Rich - Science of Abundance Platform
 
 ## Design Approach
 
-**Selected Framework:** Design System Approach with Abundance & Growth Principles
+**Brand Foundation:** Science of Abundance Visual Identity
+**Design Direction:** Old World – Mayan – Numerical
 
-This wealth and personal development application requires stability, trust, and inspiration. Drawing from premium personal development platforms and financial wellness apps, we prioritize:
-- Cognitive ease through consistent patterns
-- Emotional empowerment through rich, inspiring visuals
-- Progress visualization for wealth and worthiness growth
-- Clear information hierarchy for transformative assessments
+Drawing from ancient wisdom and mystical elegance, we capture the aesthetic of the world's first design principles. Simple, elegant, intelligible. The result uses analog sensibilities that are as grounded as they are ambitious – communicating that abundance consciousness is attainable through practice.
+
+### Brand Philosophy
+- **Visual Identity:** Carved in stone, marble halls, towering ceilings with nature throughout
+- **Typography:** Transcending language - to be felt, not just read
+- **Colors:** Earth tones representing the sun and moon's natural impact before pollution
+- **Materials:** Biblical in feeling and importance - items that can't be discarded
 
 ## Core Design Elements
 
-### A. Color Palette
+### A. Color Palette - Earth Tones
 
-**Light Mode:**
-- Primary: 210 65% 45% (Rich blue - trust, abundance, stability)
-- Primary Hover: 210 70% 38%
-- Background: 210 20% 98% (Soft near-white)
-- Surface: 0 0% 100% (Pure white cards)
-- Text Primary: 210 15% 20% (Soft black)
-- Text Secondary: 210 10% 45%
-- Success: 150 50% 45% (Growth, prosperity, achievement)
-- Warning: 35 80% 55% (Gentle alerts)
-- Accent: 280 40% 65% (Purple for wealth and transformation)
+**Light Mode - Natural Earth & Sun:**
+- Primary: 25 55% 45% (Warm terracotta - ancient clay, earth, abundance)
+- Primary Hover: 25 60% 38%
+- Background: 40 25% 96% (Warm parchment - ancient texts)
+- Surface: 35 20% 98% (Soft cream cards)
+- Text Primary: 30 15% 25% (Rich earth brown)
+- Text Secondary: 30 10% 50%
+- Success: 145 35% 42% (Deep sage - growth, nature)
+- Warning: 45 75% 55% (Golden amber - sun, attention)
+- Accent: 200 45% 45% (Deep teal - water, wisdom, transformation)
 
-**Dark Mode:**
-- Primary: 210 60% 55%
-- Primary Hover: 210 65% 48%
-- Background: 210 15% 12% (Deep calm blue-gray)
-- Surface: 210 12% 16% (Elevated cards)
-- Text Primary: 210 15% 95%
-- Text Secondary: 210 10% 70%
+**Dark Mode - Moon & Night Sky:**
+- Primary: 25 50% 55%
+- Primary Hover: 25 55% 48%
+- Background: 220 20% 15% (Deep indigo night)
+- Surface: 220 15% 20% (Elevated midnight)
+- Text Primary: 40 15% 92%
+- Text Secondary: 40 10% 70%
 - All form inputs and text fields maintain dark mode consistency
 
-### B. Typography
+### B. Typography - Ancient Wisdom
 
 **Font Stack:**
-- Primary: 'Inter' (Google Fonts) - body text, forms, UI elements
-- Headings: 'Lexend' (Google Fonts) - optimized for readability, reduces stress
+- Headings: 'PP Nikkei Line Ultrabold' - Ancient, bold, felt through the body like braille
+- Body: 'Helvetica Neue LT Std 53 Ext' - Clear, telepathic communication
+- Fallback: System fonts for reliability
 
 **Scale:**
-- H1: text-4xl md:text-5xl font-semibold (page titles)
-- H2: text-3xl md:text-4xl font-semibold (section headers)
+- H1: text-4xl md:text-5xl font-bold (page titles)
+- H2: text-3xl md:text-4xl font-bold (section headers)
 - H3: text-2xl font-semibold (card titles, step headers)
 - H4: text-xl font-medium (subsections)
 - Body: text-base leading-relaxed (all content)
@@ -50,7 +54,7 @@ This wealth and personal development application requires stability, trust, and 
 
 ### C. Layout System
 
-**Spacing Primitives:** Use Tailwind units of 4, 6, 8, 12, 16 for consistency
+**Spacing Primitives:** Organic, breathable spacing
 - Component padding: p-6 md:p-8
 - Section spacing: space-y-8 md:space-y-12
 - Card margins: mb-6 md:mb-8
@@ -59,120 +63,96 @@ This wealth and personal development application requires stability, trust, and 
 **Container System:**
 - Max width: max-w-4xl mx-auto for forms/wizards
 - Max width: max-w-6xl mx-auto for dashboards
-- Full width: w-full for progress indicators and timers
+- Full width: w-full for progress indicators
 
-### D. Component Library
+### D. Special Mark
+
+The eight-pointed compass representing:
+- Ancient womb creation
+- Eight directions of abundance
+- Sacred geometry of wealth consciousness
+
+### E. Component Library
 
 **Navigation:**
-- Top nav with logo, progress indicator (for wizards), user menu
-- Sticky positioning with subtle shadow on scroll
-- Mobile: Hamburger menu with slide-in drawer
+- Clean, minimal with subtle earth tone accents
+- Special mark integration for branding
+- Sticky positioning with organic shadows
 
 **Wizard/Multi-Step Forms:**
-- Step indicator with circles and connecting lines at top
-- Current step highlighted in primary color
-- Completed steps with checkmarks
-- Card-based content area with soft shadows
-- "Back" and "Next/Continue" buttons (Next always primary)
-- Save progress indicator in top-right
+- Step indicator with ancient numerical styling
+- Warm earth tone highlights for current step
+- Card-based with natural material feel
+- Completion states with reverence
 
 **Assessment Cards:**
-- White/surface background with rounded-xl borders
-- Icon at top (use Heroicons via CDN)
-- Title, description, estimated time
-- Subtle hover lift effect (shadow increase)
-- "Start Assessment" button centered
-
-**Feelings Dial:**
-- Circular visualization with 6 emotion segments
-- Each emotion has distinct hue: Anger (0°), Joy (60°), Fear (180°), Sadness (240°), Guilt (30°), Shame (300°)
-- Active selection grows slightly with glow effect
-- 90-second timer displayed centrally with ring progress indicator
-
-**Data Visualization:**
-- Belief map: Node-link diagram with curved paths
-- Triangle shift: Animated triangle with role labels
-- Progress charts: Soft bar charts with rounded ends
-- Use primary/accent colors for positive metrics
+- Parchment-like surfaces with subtle textures
+- Earthy icon treatments
+- Mystical hover effects (subtle elevation)
+- CTAs in primary terracotta
 
 **Forms:**
-- All inputs: Consistent dark mode with surface background
-- Labels above inputs, text-sm font-medium
-- Textarea for long responses with min-height
-- Radio/checkbox with custom styling matching theme
-- Validation messages in warning color below fields
+- Natural, organic feel to inputs
+- Warm surface backgrounds
+- Earth-toned validation
+- Accessible, clear hierarchy
 
 **Buttons:**
-- Primary: bg-primary text-white with hover states
-- Secondary: border-2 border-primary text-primary
-- Outline on images: backdrop-blur-md bg-white/10 border-white/30 text-white (no additional hover effects)
-- Icon buttons: rounded-full p-2 with hover bg
-- Sizes: Small (px-4 py-2), Default (px-6 py-3), Large (px-8 py-4)
+- Primary: Earth terracotta with depth
+- Secondary: Outlined with teal wisdom
+- Tertiary: Subtle sage green
+- Sizes maintain proportion and balance
 
-**Export Panel:**
-- Two-column grid on desktop (JSON, Excel options)
-- Each with icon, format description, file size estimate
-- Download buttons with icons from Heroicons
-- Recent exports list with timestamps
+**Export Documents:**
+- PDF: Professional, shareable, mystical formatting
+- Excel: Comprehensive data across multiple sheets
+- JSON: Raw data for technical use
 
-**Daily Worksheet:**
-- Timer at top (10:00 countdown)
-- Sectioned layout with numbered prompts
-- Auto-save indicator (subtle, top-right)
-- Completion celebration modal on finish
+### F. Animations
 
-### E. Animations
+Organic, purposeful motion:
+- Page transitions: Gentle fade (duration-200)
+- Interactions: Natural, grounded movements
+- Success states: Celebratory but refined
+- Timer: Smooth, meditative progress
 
-Use sparingly for purposeful feedback:
-- Page transitions: Fade-in only (duration-200)
-- Wizard steps: Slide transitions between steps (duration-300)
-- Button clicks: Subtle scale-95 on active
-- Timer: Smooth progress ring animation
-- Success states: Check icon with scale bounce (duration-500)
+## Visual Themes
 
-### Images
+### Merchandise & Materials
+- Coffee table books with inspirational musings
+- Daily journals with earth-tone covers
+- Large format calendars
+- Candles that imbue abundance
+- Soft touch gifting for completion
 
-**Hero Section (Homepage/Dashboard):**
-- Large hero with calming nature imagery (soft-focus forest, serene water, mountain vista)
-- Gradient overlay: from-background/80 to-background/40
-- Height: min-h-[60vh] on desktop, min-h-[40vh] on mobile
-- Centered heading with subtitle
-- Primary CTA with outline variant on blur background
-
-**Assessment Cards:**
-- Small illustrative icons (120x120px) above each assessment title
-- Soft, abstract illustrations representing each tool's purpose
-- Use rounded corners (rounded-2xl) to match card style
-
-**Empty States:**
-- Friendly illustrations for "No data yet" states
-- Encouraging text to begin first assessment
-- Dimensions: max 300px width, centered
-
-**Background Patterns:**
-- Subtle dot grid pattern on main background (opacity-5)
-- Organic flowing shapes behind hero (blur-3xl, opacity-10)
+### Print Materials
+- Biblical in feeling and importance
+- Mark of excellence and accomplishment
+- Designed to adorn desks and walls
+- Shared enthusiastically
 
 ## Accessibility & Quality Standards
 
 - WCAG AA contrast ratios minimum
-- Focus rings: ring-2 ring-primary ring-offset-2
+- Focus rings: Organic earth tones
 - Keyboard navigation fully supported
 - Screen reader labels on all interactive elements
-- Dark mode consistency across all inputs and surfaces
-- Loading states with skeleton screens (pulse animation)
-- Error boundaries with helpful recovery messages
+- Dark mode consistency across all surfaces
+- Loading states with natural, meditative feel
+- Error boundaries with helpful guidance
 
 ## Page-Specific Guidelines
 
-**Intake Wizard:** Clean vertical progression, one question visible at time, progress bar always visible, calming transition between steps
+**Intake Wizard:** Sacred journey initiation, mystical progression, one question at a time, reverent transitions
 
-**Belief Mapper:** Canvas-style interface with draggable nodes, connecting lines with labels, zoom controls, "Add Event/Belief" buttons floating right
+**Belief Mapper:** Ancient diagram style, organic connecting lines, stone-carved node aesthetics
 
-**Triangle Shift:** Large interactive triangle in center, role labels at vertices, animated transformation showing before/after states
+**Triangle Shift:** Sacred geometry, transformational visualization, wisdom-based role transitions
 
-**Six Fears:** Checklist format with expandable descriptions, progress percentage at top, resources linked for each fear
+**Six Fears:** Contemplative checklist, ancient wisdom resources, progress with reverence
 
-**Hill Overlay:** Principle selector dropdown, micro-action input field, visual hill graphic with selected principle positioned, celebration on completion
+**Hill Overlay:** Principle-based action, visual metaphor of ascent, micro-actions as sacred commitments
 
-All pages maintain consistent header, smooth transitions, and clear next-action buttons to guide users through their wealth and worthiness journey.
+**Daily 10:** Meditative 10-minute practice, structured prompts, celebration of daily wisdom
+
+All pages maintain the mystical, grounded aesthetic while guiding users through their wealth and worthiness transformation with the wisdom of ancient abundance principles.
