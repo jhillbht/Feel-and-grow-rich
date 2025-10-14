@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "@/lib/session-context";
+import { ProtectedRoute } from "@/components/protected-route";
 import { AppNav } from "@/components/app-nav";
 import { AIInsights } from "@/components/ai-insights";
 import Home from "@/pages/home";
@@ -22,16 +23,52 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
       <Route path="/auth" component={AuthPage} />
-      <Route path="/intake" component={IntakeWizard} />
-      <Route path="/belief-mapper" component={BeliefMapper} />
-      <Route path="/triangle-shift" component={TriangleShift} />
-      <Route path="/six-fears" component={SixFears} />
-      <Route path="/feelings-dial" component={FeelingsDial} />
-      <Route path="/hill-overlay" component={HillOverlay} />
-      <Route path="/daily-10" component={Daily10} />
-      <Route path="/export" component={ExportPage} />
+      <Route path="/">
+        <ProtectedRoute>
+          <Home />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/intake">
+        <ProtectedRoute>
+          <IntakeWizard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/belief-mapper">
+        <ProtectedRoute>
+          <BeliefMapper />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/triangle-shift">
+        <ProtectedRoute>
+          <TriangleShift />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/six-fears">
+        <ProtectedRoute>
+          <SixFears />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/feelings-dial">
+        <ProtectedRoute>
+          <FeelingsDial />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/hill-overlay">
+        <ProtectedRoute>
+          <HillOverlay />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/daily-10">
+        <ProtectedRoute>
+          <Daily10 />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/export">
+        <ProtectedRoute>
+          <ExportPage />
+        </ProtectedRoute>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
