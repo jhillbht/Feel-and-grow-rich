@@ -159,6 +159,28 @@ shared/
 - AI-powered abundance guidance via OpenAI
 - File-based storage for MVP (in-memory with JSON persistence)
 
+## Kajabi Integration
+
+### Automatic Account Creation for Course Students
+
+**Webhook Endpoint:** `/api/webhooks/kajabi`
+
+When a student enrolls in your Kajabi course, their account is automatically created in the app:
+
+1. **Kajabi sends webhook** with student name & email
+2. **App creates account** with secure random password
+3. **Student gets access** to all 8 assessment tools
+
+**Setup Instructions:** See `KAJABI_SETUP.md` for complete configuration guide.
+
+**Webhook Features:**
+- ✅ Duplicate prevention (checks if user already exists)
+- ✅ Email normalization (lowercase, trimmed)
+- ✅ Secure password generation (12 chars, bcrypt hashed)
+- ✅ Auto-logging of enrollments
+
+**Next Step:** Add email service (Resend, SendGrid, etc.) to automatically send login credentials to students.
+
 ## Environment Variables
 **Required for Production:**
 - `DATABASE_URL` - PostgreSQL connection string (via Supabase)

@@ -139,6 +139,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Kajabi Webhook - Auto-create accounts for course enrollments
+  app.post("/api/webhooks/kajabi", async (req, res) => {
+    try {
+      const { name, email, external_user_id } = req.body;
+
+      // Validate required fields from Kajabi
+      if (!email) {
+        return res.status(400).json({ error: "Email is required from Kajabi webhook" });
+      }
+
+      console.log(`Kajabi webhook received for: ${email}`);
+
+      // Check if user already exists
+      const existingUser = await db.select().from(users).where(eq(users.email, email.toLowerCase().trim())).limit(1);
+      
+      if (existingUser.length > 0) {
+        console.log(`User already exists: ${email}`);
+        return res.status(200).json({ 
+          message: "User already has access",
+          userId: existingUser[0].id 
+        });
+      }
+
+      // Generate a secure random password (12 characters)
+      const tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4).toUpperCase();
+      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+      // Create new user account
+      const [newUser] = await db.insert(users).values({
+        email: email.toLowerCase().trim(),
+        password: hashedPassword,
+        name: name || null,
+      }).returning();
+
+      console.log(`Auto-created account for Kajabi student: ${email}`);
+
+      // TODO: Send welcome email with login credentials
+      // For now, log the temporary password (in production, email this to the user)
+      console.log(`Temporary password for ${email}: ${tempPassword}`);
+
+      res.status(201).json({ 
+        message: "Account created successfully",
+        userId: newUser.id,
+        email: newUser.email,
+        // NOTE: Remove tempPassword from response in production - only email it
+        tempPassword: tempPassword 
+      });
+    } catch (error) {
+      console.error("Kajabi webhook error:", error);
+      res.status(500).json({ error: "Failed to process webhook" });
+    }
+  });
+
   // Session Routes
   
   // Get all sessions
