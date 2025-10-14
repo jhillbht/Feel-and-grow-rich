@@ -19,8 +19,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth Routes - Get current user
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      const userId = req.user.userId || req.user.claims?.sub;
+      const [user] = await db.select()
+        .from(users)
+        .where(userId ? eq(users.id, userId) : eq(users.oauthSub, req.user.claims.sub))
+        .limit(1);
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -36,8 +39,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Legacy endpoint for compatibility
   app.get("/api/auth/me", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      const userId = req.user.userId || req.user.claims?.sub;
+      const [user] = await db.select()
+        .from(users)
+        .where(userId ? eq(users.id, userId) : eq(users.oauthSub, req.user.claims.sub))
+        .limit(1);
       
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -55,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create session
   app.post("/api/sessions", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.userId;
       
       const [newSession] = await db.insert(userAssessments).values({
         userId,
@@ -79,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get session by ID
   app.get("/api/sessions/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.userId;
 
       const [session] = await db.select()
         .from(userAssessments)
@@ -104,7 +110,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update session
   app.patch("/api/sessions/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.userId;
 
       // Verify session belongs to user
       const [existing] = await db.select()
@@ -138,7 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Delete session
   app.delete("/api/sessions/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.userId;
 
       // Verify session belongs to user
       const [existing] = await db.select()
@@ -174,7 +180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { context, question } = validation.data;
-      const userId = req.user.claims.sub;
+      const userId = req.user.userId;
 
       const messages = [
         {
@@ -208,7 +214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Export as JSON
   app.get("/api/export/json", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.userId;
       const sessionId = req.query.sessionId as string;
 
       if (!sessionId) {
@@ -236,7 +242,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Export as Excel
   app.get("/api/export/excel", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.userId;
       const sessionId = req.query.sessionId as string;
 
       if (!sessionId) {
@@ -324,7 +330,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Export as PDF
   app.get("/api/export/pdf", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.userId;
       const sessionId = req.query.sessionId as string;
 
       if (!sessionId) {
@@ -466,8 +472,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // OAuth users won't have passwords, so we'll create a placeholder user
-      // They'll sign in via OAuth (Google, GitHub, etc.)
+      // Create placeholder user - ID will be updated to OAuth sub on first login
       const [firstName, ...lastNameParts] = (name || '').split(' ');
       const lastName = lastNameParts.join(' ');
 
@@ -476,15 +481,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName: firstName || null,
         lastName: lastName || null,
         profileImageUrl: null,
+        oauthSub: null, // Will be set on first OAuth login
       }).returning();
 
-      console.log(`Kajabi webhook: Created user for ${normalizedEmail}`);
+      console.log(`Kajabi webhook: Created placeholder user for ${normalizedEmail}`);
 
       res.status(201).json({
-        message: "User created successfully",
+        message: "User created successfully - will be linked on first OAuth login",
         userId: newUser.id,
         email: newUser.email,
-        note: "User should sign in via OAuth (Google, GitHub, etc.)"
+        note: "User should sign in via OAuth (Google, GitHub, etc.) to complete account setup"
       });
     } catch (error) {
       console.error("Kajabi webhook error:", error);
