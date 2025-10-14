@@ -1,21 +1,36 @@
-import { pgTable, text, timestamp, jsonb, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, jsonb, uuid, varchar, index } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
+// Replit Auth: Users table for OAuth authentication
 export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  email: text("email").notNull().unique(),
-  password: text("password").notNull(),
-  name: text("name"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const sessions = pgTable("sessions", {
+// Replit Auth: Session storage table (managed by connect-pg-simple)
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// User assessment data (formerly in sessions table)
+export const userAssessments = pgTable("user_assessments", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   
-  // Session data fields
+  // Assessment data fields
   intake: jsonb("intake"),
   beliefMap: jsonb("belief_map"),
   triangleShift: jsonb("triangle_shift"),
@@ -27,6 +42,6 @@ export const sessions = pgTable("sessions", {
 });
 
 export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
-export type DbSession = typeof sessions.$inferSelect;
-export type InsertDbSession = typeof sessions.$inferInsert;
+export type UpsertUser = typeof users.$inferInsert;
+export type UserAssessment = typeof userAssessments.$inferSelect;
+export type InsertUserAssessment = typeof userAssessments.$inferInsert;
