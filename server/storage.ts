@@ -2,9 +2,32 @@ import { type Session, type InsertSession } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
+import { db } from "./db";
+import { users } from "./db/schema";
+import { eq } from "drizzle-orm";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const SESSIONS_FILE = path.join(DATA_DIR, "sessions.json");
+
+// Types for Replit Auth user management
+export type UpsertUser = {
+  id: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  profileImageUrl: string | null;
+};
+
+export type User = {
+  id: string;
+  email: string | null;
+  oauthSub: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  profileImageUrl: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+};
 
 // Ensure data directory exists
 async function ensureDataDir() {
@@ -16,6 +39,11 @@ async function ensureDataDir() {
 }
 
 export interface IStorage {
+  // User operations (for Replit Auth)
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  
+  // Session operations (legacy)
   getSession(id: string): Promise<Session | undefined>;
   getAllSessions(): Promise<Session[]>;
   createSession(session: InsertSession): Promise<Session>;
@@ -30,6 +58,38 @@ export class MemStorage implements IStorage {
   constructor() {
     this.sessions = new Map();
     this.init();
+  }
+
+  // User operations (for Replit Auth) - using database
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        id: userData.id,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        profileImageUrl: userData.profileImageUrl,
+        oauthSub: userData.id, // Use ID as oauth_sub for Replit Auth
+      })
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          profileImageUrl: userData.profileImageUrl,
+          oauthSub: userData.id,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
   }
 
   private async init() {

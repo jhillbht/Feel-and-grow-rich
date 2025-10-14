@@ -5,9 +5,7 @@ import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
-import { db } from "./db";
-import { users } from "./db/schema";
-import { eq } from "drizzle-orm";
+import { storage } from "./storage";
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -56,43 +54,13 @@ function updateUserSession(
 }
 
 async function upsertUser(claims: any) {
-  const email = claims["email"];
-  const sub = claims["sub"];
-
-  // Check if user exists by oauth_sub or email
-  const [existingUser] = await db.select()
-    .from(users)
-    .where(sub ? eq(users.oauthSub, sub) : eq(users.email, email))
-    .limit(1);
-
-  if (existingUser) {
-    // Update existing user with OAuth info
-    await db.update(users)
-      .set({
-        oauthSub: sub,
-        email: email || existingUser.email,
-        firstName: claims["first_name"] || existingUser.firstName,
-        lastName: claims["last_name"] || existingUser.lastName,
-        profileImageUrl: claims["profile_image_url"] || existingUser.profileImageUrl,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, existingUser.id));
-    return existingUser.id;
-  }
-
-  // Create new user
-  const [newUser] = await db
-    .insert(users)
-    .values({
-      oauthSub: sub,
-      email: email,
-      firstName: claims["first_name"],
-      lastName: claims["last_name"],
-      profileImageUrl: claims["profile_image_url"],
-    })
-    .returning();
-  
-  return newUser.id;
+  await storage.upsertUser({
+    id: claims["sub"],
+    email: claims["email"],
+    firstName: claims["first_name"],
+    lastName: claims["last_name"],
+    profileImageUrl: claims["profile_image_url"],
+  });
 }
 
 export async function setupAuth(app: Express) {
@@ -109,8 +77,7 @@ export async function setupAuth(app: Express) {
   ) => {
     const user = {};
     updateUserSession(user, tokens);
-    const userId = await upsertUser(tokens.claims());
-    (user as any).userId = userId; // Store userId for session
+    await upsertUser(tokens.claims());
     verified(null, user);
   };
 

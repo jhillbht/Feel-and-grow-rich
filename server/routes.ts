@@ -11,6 +11,7 @@ import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { users, userAssessments } from "./db/schema";
 import { eq } from "drizzle-orm";
+import { storage } from "./storage";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Replit Auth (OAuth)
@@ -19,11 +20,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth Routes - Get current user
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.userId || req.user.claims?.sub;
-      const [user] = await db.select()
-        .from(users)
-        .where(userId ? eq(users.id, userId) : eq(users.oauthSub, req.user.claims.sub))
-        .limit(1);
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -39,11 +37,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Legacy endpoint for compatibility
   app.get("/api/auth/me", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.userId || req.user.claims?.sub;
-      const [user] = await db.select()
-        .from(users)
-        .where(userId ? eq(users.id, userId) : eq(users.oauthSub, req.user.claims.sub))
-        .limit(1);
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
       
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -61,7 +56,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create session
   app.post("/api/sessions", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.userId;
+      const userId = req.user.claims.sub;
       
       const [newSession] = await db.insert(userAssessments).values({
         userId,
@@ -85,7 +80,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get session by ID
   app.get("/api/sessions/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.userId;
+      const userId = req.user.claims.sub;
 
       const [session] = await db.select()
         .from(userAssessments)
@@ -110,7 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update session
   app.patch("/api/sessions/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.userId;
+      const userId = req.user.claims.sub;
 
       // Verify session belongs to user
       const [existing] = await db.select()
@@ -144,7 +139,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Delete session
   app.delete("/api/sessions/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.userId;
+      const userId = req.user.claims.sub;
 
       // Verify session belongs to user
       const [existing] = await db.select()
@@ -180,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { context, question } = validation.data;
-      const userId = req.user.userId;
+      const userId = req.user.claims.sub;
 
       const messages = [
         {
@@ -214,7 +209,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Export as JSON
   app.get("/api/export/json", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.userId;
+      const userId = req.user.claims.sub;
       const sessionId = req.query.sessionId as string;
 
       if (!sessionId) {
@@ -242,7 +237,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Export as Excel
   app.get("/api/export/excel", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.userId;
+      const userId = req.user.claims.sub;
       const sessionId = req.query.sessionId as string;
 
       if (!sessionId) {

@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AppNav } from "@/components/app-nav";
 import { AIInsights } from "@/components/ai-insights";
 import Home from "@/pages/home";
-import AuthPage from "@/pages/auth";
+import Landing from "@/pages/landing";
 import IntakeWizard from "@/pages/intake-wizard";
 import BeliefMapper from "@/pages/belief-mapper";
 import TriangleShift from "@/pages/triangle-shift";
@@ -25,7 +25,7 @@ function Router() {
 
   // Show landing page while loading or when not authenticated
   if (isLoading || !isAuthenticated) {
-    return <Route path="/" component={AuthPage} />;
+    return <Route path="/" component={Landing} />;
   }
 
   // Show app routes when authenticated
