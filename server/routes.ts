@@ -9,7 +9,7 @@ import * as XLSX from "xlsx";
 import PDFDocument from "pdfkit";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
-import { users } from "./db/schema";
+import { users, sessions as sessionsTable } from "./db/schema";
 import { eq } from "drizzle-orm";
 
 // Auth validation schemas
@@ -206,13 +206,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Session Routes
+  // Session Routes - Database-based
   
-  // Get all sessions
+  // Get all sessions for current user
   app.get("/api/sessions", async (req, res) => {
     try {
-      const sessions = await storage.getAllSessions();
-      res.json(sessions);
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const userSessions = await db.select()
+        .from(sessionsTable)
+        .where(eq(sessionsTable.userId, req.session.userId));
+      
+      res.json(userSessions);
     } catch (error) {
       console.error("Error fetching sessions:", error);
       res.status(500).json({ error: "Failed to fetch sessions" });
@@ -222,10 +229,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get single session
   app.get("/api/sessions/:id", async (req, res) => {
     try {
-      const session = await storage.getSession(req.params.id);
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const [session] = await db.select()
+        .from(sessionsTable)
+        .where(eq(sessionsTable.id, req.params.id))
+        .limit(1);
+      
       if (!session) {
         return res.status(404).json({ error: "Session not found" });
       }
+
+      // Verify session belongs to user
+      if (session.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
       res.json(session);
     } catch (error) {
       console.error("Error fetching session:", error);
@@ -233,11 +254,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create session
+  // Create session for current user
   app.post("/api/sessions", async (req, res) => {
     try {
-      const session = await storage.createSession(req.body);
-      res.status(201).json(session);
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const [newSession] = await db.insert(sessionsTable).values({
+        userId: req.session.userId,
+        ...req.body,
+      }).returning();
+
+      res.status(201).json(newSession);
     } catch (error) {
       console.error("Error creating session:", error);
       res.status(500).json({ error: "Failed to create session" });
@@ -247,11 +276,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update session
   app.patch("/api/sessions/:id", async (req, res) => {
     try {
-      const session = await storage.updateSession(req.params.id, req.body);
-      if (!session) {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      // Verify session belongs to user
+      const [existing] = await db.select()
+        .from(sessionsTable)
+        .where(eq(sessionsTable.id, req.params.id))
+        .limit(1);
+      
+      if (!existing) {
         return res.status(404).json({ error: "Session not found" });
       }
-      res.json(session);
+
+      if (existing.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      const [updated] = await db.update(sessionsTable)
+        .set({
+          ...req.body,
+          updatedAt: new Date(),
+        })
+        .where(eq(sessionsTable.id, req.params.id))
+        .returning();
+
+      res.json(updated);
     } catch (error) {
       console.error("Error updating session:", error);
       res.status(500).json({ error: "Failed to update session" });
@@ -261,10 +312,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Delete session
   app.delete("/api/sessions/:id", async (req, res) => {
     try {
-      const deleted = await storage.deleteSession(req.params.id);
-      if (!deleted) {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      // Verify session belongs to user
+      const [existing] = await db.select()
+        .from(sessionsTable)
+        .where(eq(sessionsTable.id, req.params.id))
+        .limit(1);
+      
+      if (!existing) {
         return res.status(404).json({ error: "Session not found" });
       }
+
+      if (existing.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      await db.delete(sessionsTable)
+        .where(eq(sessionsTable.id, req.params.id));
+
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting session:", error);
