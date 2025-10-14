@@ -12,6 +12,7 @@ import { db } from "./db";
 import { users, userAssessments } from "./db/schema";
 import { eq } from "drizzle-orm";
 import { storage } from "./storage";
+import { syncUserAssessmentToGHL } from "./ghl";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Replit Auth (OAuth)
@@ -128,6 +129,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
         .where(eq(userAssessments.id, req.params.id))
         .returning();
+
+      // Immediate GHL sync: Update contact with assessment data
+      const user = await storage.getUser(userId);
+      if (user?.email) {
+        syncUserAssessmentToGHL(user.email, updated).catch(err => {
+          console.error("GHL sync error (non-blocking):", err);
+        });
+      }
 
       res.json(updated);
     } catch (error) {
@@ -442,6 +451,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error exporting PDF:", error);
       res.status(500).json({ error: "Failed to export session" });
+    }
+  });
+
+  // GHL Batch Sync - Daily sync of all users with recent assessment updates
+  app.post('/api/ghl/batch-sync', async (req, res) => {
+    try {
+      // This endpoint can be called by a cron job or scheduled task
+      // Syncs all users with assessments updated in the last 24 hours
+      
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const recentAssessments = await db.select()
+        .from(userAssessments)
+        .innerJoin(users, eq(userAssessments.userId, users.id));
+
+      // Filter by updated date and prepare data
+      const usersToSync = recentAssessments
+        .filter(item => new Date(item.user_assessments.updatedAt) >= yesterday)
+        .map(item => ({
+          email: item.users.email,
+          assessment: item.user_assessments
+        }))
+        .filter(u => u.email);
+
+      // Import batch sync function
+      const { batchSyncRecentAssessments } = await import('./ghl');
+      const result = await batchSyncRecentAssessments(usersToSync);
+
+      res.json({
+        message: "Batch sync completed",
+        synced: usersToSync.length,
+        ...result,
+      });
+    } catch (error) {
+      console.error("Error in batch sync:", error);
+      res.status(500).json({ error: "Batch sync failed" });
     }
   });
 
