@@ -77,13 +77,16 @@ export default function AuthPage() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center mb-6">
+          <div className="inline-flex items-center justify-center mb-4">
             <img 
               src={logoImage} 
               alt="Science of Abundance" 
               className="h-20 w-20 object-contain"
             />
           </div>
+          <h1 className="font-heading text-3xl font-semibold mb-2 text-foreground">
+            Feel and Grow Rich
+          </h1>
           <p className="text-muted-foreground text-lg">
             Your journey to wealth, worthiness & abundance
           </p>
