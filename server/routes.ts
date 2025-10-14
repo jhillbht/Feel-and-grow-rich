@@ -54,8 +54,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: name || null,
       }).returning();
 
-      // Set session
+      // Set session and save explicitly
       req.session.userId = newUser.id;
+      
+      // Save session before responding
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
 
       res.status(201).json({ 
         id: newUser.id, 
@@ -64,6 +72,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Error during sign up:", error);
+      
+      // Check if it's a database constraint error
+      if (error instanceof Error && error.message.includes('unique')) {
+        return res.status(409).json({ error: "User already exists" });
+      }
+      
       res.status(500).json({ error: "Failed to create account" });
     }
   });
