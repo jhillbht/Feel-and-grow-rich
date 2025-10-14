@@ -7,8 +7,140 @@ import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import * as XLSX from "xlsx";
 import PDFDocument from "pdfkit";
+import bcrypt from "bcryptjs";
+import { db } from "./db";
+import { users } from "./db/schema";
+import { eq } from "drizzle-orm";
+
+// Auth validation schemas
+const signupSchema = z.object({
+  email: z.string().email().trim().toLowerCase(),
+  password: z.string().min(6),
+  name: z.string().optional(),
+});
+
+const signinSchema = z.object({
+  email: z.string().email().trim().toLowerCase(),
+  password: z.string(),
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth Routes
+  
+  // Sign up
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const validation = signupSchema.safeParse(req.body);
+      if (!validation.success) {
+        const validationError = fromZodError(validation.error);
+        return res.status(400).json({ error: validationError.message });
+      }
+
+      const { email, password, name } = validation.data;
+
+      // Check if user already exists
+      const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1);
+      if (existingUser.length > 0) {
+        return res.status(409).json({ error: "User already exists" });
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create user
+      const [newUser] = await db.insert(users).values({
+        email,
+        password: hashedPassword,
+        name: name || null,
+      }).returning();
+
+      // Set session
+      req.session.userId = newUser.id;
+
+      res.status(201).json({ 
+        id: newUser.id, 
+        email: newUser.email, 
+        name: newUser.name 
+      });
+    } catch (error) {
+      console.error("Error during sign up:", error);
+      res.status(500).json({ error: "Failed to create account" });
+    }
+  });
+
+  // Sign in
+  app.post("/api/auth/signin", async (req, res) => {
+    try {
+      const validation = signinSchema.safeParse(req.body);
+      if (!validation.success) {
+        const validationError = fromZodError(validation.error);
+        return res.status(400).json({ error: validationError.message });
+      }
+
+      const { email, password } = validation.data;
+
+      // Find user
+      const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+      if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // Verify password
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // Set session
+      req.session.userId = user.id;
+
+      res.json({ 
+        id: user.id, 
+        email: user.email, 
+        name: user.name 
+      });
+    } catch (error) {
+      console.error("Error during sign in:", error);
+      res.status(500).json({ error: "Failed to sign in" });
+    }
+  });
+
+  // Sign out
+  app.post("/api/auth/signout", async (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error during sign out:", err);
+        return res.status(500).json({ error: "Failed to sign out" });
+      }
+      res.status(204).send();
+    });
+  });
+
+  // Get current user
+  app.get("/api/auth/me", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    try {
+      const [user] = await db.select().from(users).where(eq(users.id, req.session.userId)).limit(1);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({ 
+        id: user.id, 
+        email: user.email, 
+        name: user.name 
+      });
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+      res.status(500).json({ error: "Failed to fetch user" });
+    }
+  });
+
+  // Session Routes
+  
   // Get all sessions
   app.get("/api/sessions", async (req, res) => {
     try {

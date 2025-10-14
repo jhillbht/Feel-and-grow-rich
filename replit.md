@@ -7,17 +7,20 @@ A comprehensive web application providing transformative tools and assessments f
 
 ### Technology Stack
 - **Frontend**: React 18, TypeScript, Wouter (routing), TanStack Query
-- **Backend**: Node.js, Express
+- **Backend**: Node.js, Express, Express-Session
+- **Database**: PostgreSQL (via Supabase/DATABASE_URL), Drizzle ORM
+- **Authentication**: bcrypt password hashing with session-based auth
 - **Styling**: Tailwind CSS, Shadcn UI components
 - **AI Integration**: OpenAI Responses API (via Replit AI Integrations)
-- **Data Export**: xlsx library for Excel generation
-- **Storage**: In-memory (MemStorage) with JSON file persistence
+- **Data Export**: xlsx (Excel), pdfkit (PDF), JSON
+- **Storage**: Dual storage - PostgreSQL for users/auth, In-memory (MemStorage) for legacy session data with JSON file persistence
 
-### Design System
-- **Color Palette**: Rich blues and empowering accents for abundance and growth
-- **Typography**: Inter (body), Lexend (headings) - optimized for readability
+### Design System (Science of Abundance Visual Identity)
+- **Color Palette**: Earth tones - Terracotta (#8B6B47) primary, Sage (#6B8E6B) success, Teal (#4A7C7E) info, Amber (#C4A661) accent
+- **Typography**: Helvetica Neue (body & headings) - ancient wisdom aesthetic
 - **Dark Mode**: Full support with persistent theme switching
 - **Responsive**: Mobile-first design approach
+- **Branding**: "Feel and Grow Rich" name with Science of Abundance visual language
 
 ## Features
 
@@ -60,25 +63,42 @@ A comprehensive web application providing transformative tools and assessments f
    - Celebration of daily progress
 
 8. **Export** - Data portability:
-   - JSON export (raw data)
-   - Excel export (spreadsheet format)
+   - JSON export (raw session data download)
+   - Excel export (8 worksheets with all assessment data)
+   - PDF export (professional report with all insights formatted with pdfkit)
    - Track your journey to feeling and growing rich
 
 ### Data Model
-Located in `shared/schema.ts`:
+PostgreSQL schemas in `server/db/schema.ts`:
+- **Users table**: id (UUID), email, password (bcrypt hashed), name, timestamps
+- **Sessions table**: id (UUID), user_id (FK), timestamps, JSONB columns for all assessment data
+- Assessment data stored in JSONB columns: intake, belief_map, triangle_shift, six_fears, feelings_dial, hill_overlay, daily_10, ai_interactions
+
+Legacy in-memory schemas in `shared/schema.ts`:
 - Session schema with all assessment data
 - Individual assessment schemas with validation
 - TypeScript types for type safety
 - Zod validation schemas
 
 ### API Routes
+
+**Authentication:**
+- `POST /api/auth/signup` - Create new user account with bcrypt password hashing
+- `POST /api/auth/signin` - Authenticate user and create session
+- `POST /api/auth/signout` - Destroy user session
+- `GET /api/auth/me` - Get current authenticated user
+
+**Sessions:**
 - `POST /api/sessions` - Create new session
 - `GET /api/sessions/:id` - Retrieve session data
 - `PATCH /api/sessions/:id` - Update session data
 - `DELETE /api/sessions/:id` - Delete session
+
+**AI & Export:**
 - `POST /api/respond` - AI-powered wealth consciousness guidance (OpenAI)
 - `GET /api/export/json` - Export session as JSON
-- `GET /api/export/excel` - Export session as Excel
+- `GET /api/export/excel` - Export session as Excel (8 worksheets)
+- `GET /api/export/pdf` - Export session as PDF report
 
 ## Project Structure
 ```
@@ -110,17 +130,27 @@ shared/
 ```
 
 ## Recent Changes
-- 2025-10-14: Complete MVP implementation & Rebranding
+- 2025-10-14: Complete MVP implementation, Rebranding & Database Migration
   - All 8 transformative tools fully functional
   - Backend API with session management and persistence
   - OpenAI integration for AI-powered wealth consciousness insights
-  - PDF, Excel, and JSON export functionality
+  - **Enhanced Export System**: 
+    - PDF export using pdfkit for professional reports with all assessment data
+    - Excel export expanded to 8 worksheets (was 3) covering all tools
+    - JSON export for raw data backup
   - End-to-end testing completed successfully
   - Session data hydration and persistence across page reloads
-  - Rebranded to "Feel and Grow Rich" with Science of Abundance visual identity
-  - Applied earth tone color palette (terracotta, sage, teal, amber)
-  - Updated typography to Helvetica Neue for ancient wisdom aesthetic
-  - Added Supabase authentication and PostgreSQL database integration (in progress)
+  - **Visual Rebranding**: "Feel and Grow Rich" with Science of Abundance visual identity
+    - Earth tone color palette: Terracotta (#8B6B47), Sage (#6B8E6B), Teal (#4A7C7E), Amber (#C4A661)
+    - Typography: Helvetica Neue replacing Inter/Lexend for ancient wisdom aesthetic
+    - Updated all UI components with new brand colors
+  - **Database & Authentication Migration**:
+    - PostgreSQL database via Supabase (DATABASE_URL)
+    - Users table with bcrypt password hashing
+    - Sessions table with JSONB columns for flexible data storage
+    - Express-session middleware for session management
+    - Complete auth flow: signup, signin, signout, current user endpoints
+    - Session-based authentication with secure cookies
 
 ## User Preferences
 - Rich, empowering visual design with Inter/Lexend fonts
@@ -129,10 +159,20 @@ shared/
 - AI-powered abundance guidance via OpenAI
 - File-based storage for MVP (in-memory with JSON persistence)
 
+## Environment Variables
+**Required for Production:**
+- `DATABASE_URL` - PostgreSQL connection string (via Supabase)
+- `SESSION_SECRET` - Secure secret for session signing (32+ random characters)
+- `SUPABASE_URL` - Supabase project URL
+- `SUPABASE_ANON_KEY` - Supabase anonymous key
+
+**Note:** The application uses connect-pg-simple for persistent session storage in PostgreSQL, ensuring session data survives server restarts and scales across instances.
+
 ## Development Status
 - ✅ Phase 1: Schema & Frontend Complete
 - ✅ Phase 2: Backend Implementation Complete
 - ✅ Phase 3: Integration & Testing Complete
+- ✅ Authentication & Database Migration Complete
 - ✅ MVP Ready for Production
 
 ## Key Implementation Details
