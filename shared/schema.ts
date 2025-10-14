@@ -119,11 +119,18 @@ export type Daily10 = z.infer<typeof daily10Schema>;
 export type Session = z.infer<typeof sessionSchema>;
 export type InsertSession = z.infer<typeof insertSessionSchema>;
 
-// AI Response Schema
+// AI Request Schema (what client sends)
+export const aiRequestSchema = z.object({
+  context: z.any(), // Session data context
+  question: z.string().min(1, "Question is required"),
+});
+
+// AI Response Schema (what server returns)
 export const aiResponseSchema = z.object({
   response: z.string(),
   suggestions: z.array(z.string()).optional(),
   insights: z.string().optional(),
 });
 
+export type AIRequest = z.infer<typeof aiRequestSchema>;
 export type AIResponse = z.infer<typeof aiResponseSchema>;
