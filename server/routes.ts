@@ -10,7 +10,7 @@ import PDFDocument from "pdfkit";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { users, userAssessments } from "./db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { storage } from "./storage";
 import { syncUserAssessmentToGHL, batchSyncRecentAssessments } from "./ghl";
 
