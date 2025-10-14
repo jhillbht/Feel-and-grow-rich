@@ -1,21 +1,22 @@
 import { Link, useLocation } from "wouter";
 import { ThemeToggle } from "./theme-toggle";
 import { 
-  Brain, 
+  Sparkles, 
   Triangle, 
   Heart, 
   Smile, 
   Mountain, 
   ClipboardList, 
   Download,
-  Home
+  Home,
+  TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
   { path: "/", label: "Home", icon: Home },
   { path: "/intake", label: "Intake", icon: ClipboardList },
-  { path: "/belief-mapper", label: "Belief Mapper", icon: Brain },
+  { path: "/belief-mapper", label: "Belief Mapper", icon: TrendingUp },
   { path: "/triangle-shift", label: "Triangle Shift", icon: Triangle },
   { path: "/six-fears", label: "Six Fears", icon: Heart },
   { path: "/feelings-dial", label: "Feelings Dial", icon: Smile },
@@ -35,9 +36,9 @@ export function AppNav() {
             <Link href="/">
               <div className="flex items-center gap-2 font-heading font-semibold text-xl cursor-pointer" data-testid="link-home">
                 <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-primary-foreground" />
+                  <Sparkles className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="hidden sm:inline">Inner Journey</span>
+                <span className="hidden sm:inline">Feel and Grow Rich</span>
               </div>
             </Link>
             

@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
-  Brain, 
+  TrendingUp, 
   Triangle, 
   Heart, 
   Smile, 
@@ -16,7 +16,7 @@ const tools = [
   {
     path: "/intake",
     title: "Intake Wizard",
-    description: "Begin your journey with a comprehensive intake assessment",
+    description: "Begin your wealth journey with a comprehensive assessment",
     icon: ClipboardList,
     color: "text-chart-1",
     estimate: "10-15 min",
@@ -24,15 +24,15 @@ const tools = [
   {
     path: "/belief-mapper",
     title: "Belief Mapper",
-    description: "Map events to beliefs and identify loops and disconnections",
-    icon: Brain,
+    description: "Map limiting beliefs about wealth and identify blocks to prosperity",
+    icon: TrendingUp,
     color: "text-chart-2",
     estimate: "15-20 min",
   },
   {
     path: "/triangle-shift",
     title: "Triangle Shift",
-    description: "Transform from Victim/Hero/Persecutor to Creator/Coach/Challenger",
+    description: "Transform from scarcity mindset to abundance consciousness",
     icon: Triangle,
     color: "text-chart-3",
     estimate: "10 min",
@@ -40,7 +40,7 @@ const tools = [
   {
     path: "/six-fears",
     title: "Six Fears Assessment",
-    description: "Identify and work through your core fears",
+    description: "Identify fears blocking your path to wealth and worthiness",
     icon: Heart,
     color: "text-chart-4",
     estimate: "5-10 min",
@@ -48,7 +48,7 @@ const tools = [
   {
     path: "/feelings-dial",
     title: "Feelings Dial",
-    description: "Track 6 emotions with a 90-second mindfulness practice",
+    description: "Track emotions with abundance-focused mindfulness",
     icon: Smile,
     color: "text-chart-5",
     estimate: "5 min",
@@ -56,7 +56,7 @@ const tools = [
   {
     path: "/hill-overlay",
     title: "Hill Overlay",
-    description: "Select a guiding principle and commit to a micro-action",
+    description: "Select a wealth principle and commit to prosperity action",
     icon: Mountain,
     color: "text-chart-1",
     estimate: "5 min",
@@ -64,7 +64,7 @@ const tools = [
   {
     path: "/daily-10",
     title: "Daily 10",
-    description: "Complete your 10-minute daily reflection worksheet",
+    description: "Complete your 10-minute wealth consciousness practice",
     icon: ClipboardList,
     color: "text-chart-2",
     estimate: "10 min",
@@ -82,16 +82,16 @@ export default function Home() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
               <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Your Personal Development Journey</span>
+              <span className="text-sm font-medium">Wealth, Worthiness & Personal Development</span>
             </div>
             
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-bold text-foreground mb-6">
-              Welcome to Inner Journey
+              Feel and Grow Rich
             </h1>
             
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              A comprehensive platform for mental health and personal development. 
-              Explore therapeutic tools designed to support your growth and self-discovery.
+              A comprehensive platform for wealth, worthiness, and personal development. 
+              Explore powerful tools designed to help you feel and grow rich in all areas of your life.
             </p>
           </div>
 

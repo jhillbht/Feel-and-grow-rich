@@ -35743,5 +35743,29 @@
     "id": "3edad113-904c-4544-9923-00fe6f9dd106",
     "createdAt": "2025-10-14T00:59:08.275Z",
     "updatedAt": "2025-10-14T00:59:08.275Z"
+  },
+  {
+    "id": "c92f9ecb-2349-4320-90e4-628900e6e155",
+    "createdAt": "2025-10-14T01:08:10.143Z",
+    "updatedAt": "2025-10-14T01:12:58.563Z",
+    "intake": {
+      "name": "Test User A4NSs_",
+      "birthDate": "",
+      "birthTime": "",
+      "birthPlace": "",
+      "consent": true,
+      "conditionsOfLife": "Exploring my relationship with money and abundance",
+      "loopToBreak": "Recurring scarcity mindset around spending and self-worth"
+    },
+    "beliefMap": {
+      "items": [
+        {
+          "id": "1760404278788",
+          "type": "belief",
+          "content": "Money is the root of all evil",
+          "connectedTo": []
+        }
+      ]
+    }
   }
 ]

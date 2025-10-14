@@ -23,7 +23,7 @@ export default function ExportPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `inner-journey-export-${Date.now()}.json`;
+      a.download = `feel-and-grow-rich-export-${Date.now()}.json`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -59,7 +59,7 @@ export default function ExportPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `inner-journey-export-${Date.now()}.xlsx`;
+      a.download = `feel-and-grow-rich-export-${Date.now()}.xlsx`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -102,8 +102,8 @@ export default function ExportPage() {
           <CardContent>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Your data includes all completed assessments, reflections, and insights from your 
-              therapeutic journey. Export formats preserve all your information for personal records 
-              or to share with your healthcare provider.
+              wealth and worthiness journey. Export formats preserve all your information for personal records 
+              and tracking your prosperity transformation.
             </p>
           </CardContent>
         </Card>

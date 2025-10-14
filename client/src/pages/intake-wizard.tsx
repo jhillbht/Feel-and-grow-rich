@@ -220,11 +220,11 @@ export default function IntakeWizard() {
                         </FormControl>
                         <div className="space-y-1 leading-none">
                           <FormLabel>
-                            I consent to participate in this therapeutic journey
+                            I consent to participate in this wealth and worthiness journey
                           </FormLabel>
                           <FormDescription>
-                            By checking this box, you acknowledge that this is a self-guided therapeutic tool 
-                            and does not replace professional mental health care.
+                            By checking this box, you acknowledge that this is a self-guided personal development tool 
+                            and does not replace professional financial or mental health counseling.
                           </FormDescription>
                           <FormMessage />
                         </div>

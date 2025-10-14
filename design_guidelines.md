@@ -1,29 +1,29 @@
-# Design Guidelines: Mental Health & Personal Development Platform
+# Design Guidelines: Feel and Grow Rich - Wealth, Worthiness & Personal Development Platform
 
 ## Design Approach
 
-**Selected Framework:** Design System Approach with Calm Healthcare Principles
+**Selected Framework:** Design System Approach with Abundance & Growth Principles
 
-This therapeutic application requires stability, trust, and clarity. Drawing from healthcare UI best practices (similar to Headspace, Calm, BetterHelp), we prioritize:
+This wealth and personal development application requires stability, trust, and inspiration. Drawing from premium personal development platforms and financial wellness apps, we prioritize:
 - Cognitive ease through consistent patterns
-- Emotional safety through soft, non-threatening visuals
-- Progress visualization for user motivation
-- Clear information hierarchy for complex assessments
+- Emotional empowerment through rich, inspiring visuals
+- Progress visualization for wealth and worthiness growth
+- Clear information hierarchy for transformative assessments
 
 ## Core Design Elements
 
 ### A. Color Palette
 
 **Light Mode:**
-- Primary: 210 65% 45% (Calming blue - trust, stability)
+- Primary: 210 65% 45% (Rich blue - trust, abundance, stability)
 - Primary Hover: 210 70% 38%
 - Background: 210 20% 98% (Soft near-white)
 - Surface: 0 0% 100% (Pure white cards)
 - Text Primary: 210 15% 20% (Soft black)
 - Text Secondary: 210 10% 45%
-- Success: 150 50% 45% (Growth, progress)
+- Success: 150 50% 45% (Growth, prosperity, achievement)
 - Warning: 35 80% 55% (Gentle alerts)
-- Accent: 280 40% 65% (Subtle purple for insights)
+- Accent: 280 40% 65% (Purple for wealth and transformation)
 
 **Dark Mode:**
 - Primary: 210 60% 55%
@@ -175,4 +175,4 @@ Use sparingly for purposeful feedback:
 
 **Hill Overlay:** Principle selector dropdown, micro-action input field, visual hill graphic with selected principle positioned, celebration on completion
 
-All pages maintain consistent header, smooth transitions, and clear next-action buttons to guide users through their therapeutic journey.
+All pages maintain consistent header, smooth transitions, and clear next-action buttons to guide users through their wealth and worthiness journey.

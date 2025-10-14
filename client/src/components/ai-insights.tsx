@@ -59,10 +59,10 @@ export function AIInsights() {
         <DialogHeader>
           <DialogTitle className="font-heading flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-primary" />
-            AI Therapeutic Insights
+            AI Abundance Insights
           </DialogTitle>
           <DialogDescription>
-            Ask for guidance, insights, or reflections based on your session data
+            Ask for wealth consciousness guidance, prosperity insights, or abundance reflections based on your session data
           </DialogDescription>
         </DialogHeader>
 

@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { openai, AI_MODEL, THERAPEUTIC_SYSTEM_PROMPT } from "./openai";
+import { openai, AI_MODEL, WEALTH_CONSCIOUSNESS_SYSTEM_PROMPT } from "./openai";
 import { sessionSchema, aiResponseSchema } from "@shared/schema";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -88,13 +88,13 @@ ${JSON.stringify(sessionState, null, 2)}
 User Question/Reflection:
 ${prompt}
 
-Please provide therapeutic guidance in JSON format.`;
+Please provide wealth consciousness guidance in JSON format.`;
 
       // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
       const completion = await openai.chat.completions.create({
         model: AI_MODEL,
         messages: [
-          { role: "system", content: THERAPEUTIC_SYSTEM_PROMPT },
+          { role: "system", content: WEALTH_CONSCIOUSNESS_SYSTEM_PROMPT },
           { role: "user", content: userMessage }
         ],
         response_format: { type: "json_object" },
@@ -131,7 +131,7 @@ Please provide therapeutic guidance in JSON format.`;
       };
 
       res.setHeader("Content-Type", "application/json");
-      res.setHeader("Content-Disposition", `attachment; filename="inner-journey-export-${Date.now()}.json"`);
+      res.setHeader("Content-Disposition", `attachment; filename="feel-and-grow-rich-export-${Date.now()}.json"`);
       res.json(exportData);
     } catch (error) {
       console.error("Error exporting JSON:", error);
@@ -203,7 +203,7 @@ Please provide therapeutic guidance in JSON format.`;
       const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
 
       res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-      res.setHeader("Content-Disposition", `attachment; filename="inner-journey-export-${Date.now()}.xlsx"`);
+      res.setHeader("Content-Disposition", `attachment; filename="feel-and-grow-rich-export-${Date.now()}.xlsx"`);
       res.send(buffer);
     } catch (error) {
       console.error("Error exporting Excel:", error);
