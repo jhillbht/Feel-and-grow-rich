@@ -14,7 +14,13 @@ const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [sessionId, setSessionId] = useState<string | null>(() => {
-    return localStorage.getItem("currentSessionId");
+    const stored = localStorage.getItem("currentSessionId");
+    // Return null if localStorage has invalid values
+    if (!stored || stored === "undefined" || stored === "null") {
+      localStorage.removeItem("currentSessionId");
+      return null;
+    }
+    return stored;
   });
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   
@@ -22,7 +28,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const { data: currentSession, isLoading } = useQuery<Session>({
     queryKey: ["/api/sessions", sessionId],
-    enabled: !!sessionId,
+    enabled: !!sessionId && sessionId !== "undefined",
   });
 
   const createSessionMutation = useMutation({
