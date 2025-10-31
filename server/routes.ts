@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./auth";
 import { openai, AI_MODEL, WEALTH_CONSCIOUSNESS_SYSTEM_PROMPT } from "./openai";
 import { sessionSchema, aiRequestSchema } from "@shared/schema";
 import { z } from "zod";
@@ -15,14 +15,13 @@ import { storage } from "./storage";
 import { syncUserAssessmentToGHL, batchSyncRecentAssessments } from "./ghl";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup Replit Auth (OAuth)
+  // Setup OAuth (Google + GitHub)
   await setupAuth(app);
 
   // Auth Routes - Get current user
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -38,8 +37,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Legacy endpoint for compatibility
   app.get("/api/auth/me", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = req.user;
       
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -57,7 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create session
   app.post("/api/sessions", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       
       const [newSession] = await db.insert(userAssessments).values({
         userId,
@@ -81,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get session by ID
   app.get("/api/sessions/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
 
       const [session] = await db.select()
         .from(userAssessments)
@@ -106,7 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update session
   app.patch("/api/sessions/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
 
       // Verify session belongs to user
       const [existing] = await db.select()
@@ -148,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Delete session
   app.delete("/api/sessions/:id", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
 
       // Verify session belongs to user
       const [existing] = await db.select()
@@ -184,7 +182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { context, question } = validation.data;
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
 
       const messages = [
         {
@@ -218,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Export as JSON
   app.get("/api/export/json", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const sessionId = req.query.sessionId as string;
 
       if (!sessionId) {
@@ -246,7 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Export as Excel
   app.get("/api/export/excel", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const sessionId = req.query.sessionId as string;
 
       if (!sessionId) {
