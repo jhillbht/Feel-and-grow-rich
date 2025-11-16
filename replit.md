@@ -1,6 +1,8 @@
 ## Overview
 "Feel and Grow Rich" is a comprehensive web application designed to empower users in their journey toward wealth, worthiness, and personal development. It offers transformative tools and assessments, leveraging a modern tech stack (React, TypeScript, Node.js, PostgreSQL) and AI-powered guidance through OpenAI integration. The platform aims to provide a rich, interactive experience, helping individuals identify and overcome limiting beliefs, transform their mindset, and commit to actions that foster abundance in all aspects of life.
 
+**IMPORTANT:** As of November 16, 2025, the application uses **standard Google OAuth only** (via Passport.js), NOT Replit Auth. Replit Auth packages have been completely removed.
+
 ## User Preferences
 - Rich, empowering visual design with Inter/Lexend fonts
 - Easy navigation between transformative tools
@@ -9,9 +11,19 @@
 - File-based storage for MVP (in-memory with JSON persistence)
 
 ## System Architecture
-The application is built with a React frontend (TypeScript, Wouter, TanStack Query), a Node.js/Express backend, and a PostgreSQL database using Drizzle ORM. Authentication is handled via standard OAuth (Google and GitHub) using Passport.js. Styling is managed with Tailwind CSS and Shadcn UI components. AI integration uses the OpenAI API.
+The application is built with a React frontend (TypeScript, Wouter, TanStack Query), a Node.js/Express backend, and a PostgreSQL database (Neon-hosted via Replit) using Drizzle ORM. Authentication is handled via **standard Google OAuth** using Passport.js (NOT Replit Auth). Styling is managed with Tailwind CSS and Shadcn UI components. AI integration uses the OpenAI API.
 
-**Recent Migration (2025):**
+**Database Connection:**
+- Host: `ep-muddy-breeze-ae8zt97c.c-2.us-east-2.aws.neon.tech`
+- Provider: Neon (PostgreSQL compatible)
+- Created: November 16, 2025 (replaced old "helium" database)
+
+**Recent Updates (November 2025):**
+- **Nov 16, 2025:** Completely removed Replit Auth - now uses Google OAuth only (standard Passport.js)
+- **Nov 16, 2025:** Created new Neon PostgreSQL database to replace malformed "helium" connection
+- **Nov 16, 2025:** Fixed persistent "getaddrinfo EAI_AGAIN" DNS errors
+- **Nov 16, 2025:** Uninstalled Replit Auth packages: `openid-client`, `memoizee`
+- **Nov 16, 2025:** Fixed Express error handler to prevent "headers already sent" conflicts
 - Migrated from Replit Auth to standard OAuth for local development compatibility
 - Now supports deployment to Vercel, Railway, and other platforms
 - Added comprehensive local development setup with Cursor IDE support
@@ -34,7 +46,8 @@ The application is built with a React frontend (TypeScript, Wouter, TanStack Que
 -   Assessment data is stored efficiently in JSONB columns.
 
 **API Routes:**
--   **Authentication:** `GET /api/auth/google`, `GET /api/auth/google/callback`, `GET /api/auth/github`, `GET /api/auth/github/callback`, `GET /api/logout`, `GET /api/auth/user`.
+-   **Authentication:** `GET /api/auth/google`, `GET /api/auth/google/callback`, `GET /api/logout`, `GET /api/auth/user`.
+    - **NOTE:** GitHub OAuth is configured in code but not currently used. Google OAuth is the primary authentication method.
 -   **User Assessments:** `POST /api/sessions`, `GET /api/sessions/:id`, `PATCH /api/sessions/:id`, `DELETE /api/sessions/:id`.
 -   **AI & Export:** `POST /api/respond`, `GET /api/export/json`, `GET /api/export/excel`, `GET /api/export/pdf`.
 
@@ -47,7 +60,7 @@ The application is built with a React frontend (TypeScript, Wouter, TanStack Que
 -   **Frontend:** React 18, TypeScript, Wouter (routing), TanStack Query.
 -   **Backend:** Node.js, Express, Passport.js.
 -   **Database:** PostgreSQL (via Supabase `DATABASE_URL`), Drizzle ORM.
--   **Authentication:** Standard OAuth via Passport.js (Google OAuth 2.0, GitHub OAuth).
+-   **Authentication:** Standard OAuth via Passport.js (Google OAuth 2.0 only - GitHub configured but not active).
 -   **Styling:** Tailwind CSS, Shadcn UI components.
 -   **AI Integration:** OpenAI Responses API (via Replit AI Integrations).
 -   **Data Export:** `xlsx` (Excel), `pdfkit` (PDF).
@@ -55,4 +68,6 @@ The application is built with a React frontend (TypeScript, Wouter, TanStack Que
     -   **Kajabi:** Webhook integration (`/api/webhooks/kajabi`) for automatic user account creation and linking upon course enrollment, matching users by email with OAuth.
     -   **GoHighLevel (GHL):** One-way sync of user assessment progress to GHL contacts. Requires `GHL_API_KEY` and `GHL_LOCATION_ID`. Features immediate and batch syncing, contact matching by email, and updates custom fields for all 8 assessment tools.
 -   **Session Storage:** `connect-pg-simple` for persistent Passport sessions in PostgreSQL.
--   **Environment Variables:** `DATABASE_URL`, `SESSION_SECRET`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `APP_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GHL_API_KEY`, `GHL_LOCATION_ID`, `NODE_ENV`.
+-   **Environment Variables:** `DATABASE_URL`, `SESSION_SECRET`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `APP_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GHL_API_KEY`, `GHL_LOCATION_ID`, `NODE_ENV`.
+    - **NOTE:** `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` are configured but not currently used.
+    - **DATABASE_URL** now points to new Neon database (as of Nov 16, 2025): `ep-muddy-breeze-ae8zt97c.c-2.us-east-2.aws.neon.tech`
