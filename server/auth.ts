@@ -8,9 +8,6 @@ import { storage } from "./storage";
 
 const APP_URL = process.env.APP_URL || "http://localhost:5000";
 
-console.log("[AUTH] APP_URL configured as:", APP_URL);
-console.log("[AUTH] Google OAuth callback will be:", `${APP_URL}/api/auth/google/callback`);
-
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
   const pgStore = connectPg(session);
