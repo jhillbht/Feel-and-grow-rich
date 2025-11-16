@@ -77,7 +77,6 @@ export async function setupAuth(app: Express) {
           clientSecret: process.env.GITHUB_CLIENT_SECRET,
           callbackURL: `${APP_URL}/api/auth/github/callback`,
           scope: ["user:email"],
-          state: true,
         },
         async (accessToken: string, refreshToken: string, profile: any, done: any) => {
           try {
