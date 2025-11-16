@@ -50,7 +50,7 @@ export default function Landing() {
 
         {/* CTA */}
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex justify-center">
             <Button
               size="lg"
               className="text-lg px-8 py-6 h-auto"
@@ -58,15 +58,6 @@ export default function Landing() {
               data-testid="button-login-google"
             >
               Continue with Google
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg px-8 py-6 h-auto"
-              onClick={() => window.location.href = "/api/auth/github"}
-              data-testid="button-login-github"
-            >
-              Continue with GitHub
             </Button>
           </div>
           <p className="text-sm text-muted-foreground">
