@@ -115,10 +115,34 @@ export async function setupAuth(app: Express) {
 
   app.get(
     "/api/auth/google/callback",
-    passport.authenticate("google", {
-      failureRedirect: "/",
-      successRedirect: "/",
-    })
+    (req, res, next) => {
+      passport.authenticate("google", (err: any, user: any, info: any) => {
+        if (err) {
+          console.error("[AUTH ERROR] Google OAuth callback failed:", err);
+          console.error("[AUTH ERROR] Error details:", {
+            message: err.message,
+            stack: err.stack,
+            code: err.code,
+          });
+          return res.redirect("/?error=auth_failed");
+        }
+        
+        if (!user) {
+          console.error("[AUTH ERROR] No user returned from Google OAuth");
+          return res.redirect("/?error=no_user");
+        }
+        
+        req.login(user, (loginErr) => {
+          if (loginErr) {
+            console.error("[AUTH ERROR] Login failed:", loginErr);
+            return res.redirect("/?error=login_failed");
+          }
+          
+          console.log("[AUTH SUCCESS] User logged in:", user.email);
+          return res.redirect("/");
+        });
+      })(req, res, next);
+    }
   );
 
   // GitHub Auth Routes
