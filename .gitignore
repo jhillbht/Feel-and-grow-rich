@@ -8,6 +8,7 @@ node_modules
 .env.local
 .env.production
 .env.development
+PRODUCTION_SECRETS.md
 
 # Build outputs
 dist
