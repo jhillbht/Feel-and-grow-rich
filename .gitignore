@@ -52,11 +52,20 @@ temp
 *.sqlite3
 *.db
 
-# Replit specific
-.replit
+# Replit specific (keep .replit for deployment config)
+# .replit
 .config
 .upm
 replit.nix
 
+# Supabase local development
+.local/
+supabase/.branches
+supabase/.temp
+
 # Session storage
 sessions
+data/sessions.json
+
+# Development scripts (optional - can commit if team needs)
+# start-dev.sh
