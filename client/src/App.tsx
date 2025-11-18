@@ -10,6 +10,7 @@ import { AppNav } from "@/components/app-nav";
 import { AIInsights } from "@/components/ai-insights";
 import Home from "@/pages/home";
 import Landing from "@/pages/landing";
+import AuthCallback from "@/pages/auth-callback";
 import IntakeWizard from "@/pages/intake-wizard";
 import BeliefMapper from "@/pages/belief-mapper";
 import TriangleShift from "@/pages/triangle-shift";
@@ -23,24 +24,26 @@ import NotFound from "@/pages/not-found";
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  // Show landing page while loading or when not authenticated
-  if (isLoading || !isAuthenticated) {
-    return <Route path="/" component={Landing} />;
-  }
-
-  // Show app routes when authenticated
+  // Auth callback route - always show regardless of auth state
   return (
     <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/intake" component={IntakeWizard} />
-      <Route path="/belief-mapper" component={BeliefMapper} />
-      <Route path="/triangle-shift" component={TriangleShift} />
-      <Route path="/six-fears" component={SixFears} />
-      <Route path="/feelings-dial" component={FeelingsDial} />
-      <Route path="/hill-overlay" component={HillOverlay} />
-      <Route path="/daily-10" component={Daily10} />
-      <Route path="/export" component={ExportPage} />
-      <Route component={NotFound} />
+      <Route path="/auth/callback" component={AuthCallback} />
+      {isLoading || !isAuthenticated ? (
+        <Route path="/" component={Landing} />
+      ) : (
+        <>
+          <Route path="/" component={Home} />
+          <Route path="/intake" component={IntakeWizard} />
+          <Route path="/belief-mapper" component={BeliefMapper} />
+          <Route path="/triangle-shift" component={TriangleShift} />
+          <Route path="/six-fears" component={SixFears} />
+          <Route path="/feelings-dial" component={FeelingsDial} />
+          <Route path="/hill-overlay" component={HillOverlay} />
+          <Route path="/daily-10" component={Daily10} />
+          <Route path="/export" component={ExportPage} />
+          <Route component={NotFound} />
+        </>
+      )}
     </Switch>
   );
 }

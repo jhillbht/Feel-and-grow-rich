@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Sparkles, Target, TrendingUp } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Landing() {
+  const { signInWithGoogle, isLoading } = useAuth();
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-background to-accent/10 p-6">
       <div className="max-w-4xl w-full text-center space-y-8">
@@ -54,10 +57,11 @@ export default function Landing() {
             <Button
               size="lg"
               className="text-lg px-8 py-6 h-auto"
-              onClick={() => window.location.href = "/api/auth/google"}
+              onClick={signInWithGoogle}
+              disabled={isLoading}
               data-testid="button-login-google"
             >
-              Continue with Google
+              {isLoading ? "Loading..." : "Continue with Google"}
             </Button>
           </div>
           <p className="text-sm text-muted-foreground">
