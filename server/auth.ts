@@ -1,5 +1,8 @@
 import type { Express, RequestHandler } from "express";
 import { supabase } from "./supabase";
+import { db } from "./db";
+import { users } from "./db/schema";
+import { eq } from "drizzle-orm";
 
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
@@ -43,6 +46,37 @@ export async function setupAuth(app: Express) {
   });
 }
 
+// Helper function to ensure user exists in public.users table
+async function ensureUserExists(supabaseUser: any) {
+  try {
+    // Check if user exists
+    const [existingUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, supabaseUser.id))
+      .limit(1);
+
+    // If user doesn't exist, create them
+    if (!existingUser) {
+      const nameParts = supabaseUser.user_metadata?.full_name?.split(" ") || [];
+      
+      await db.insert(users).values({
+        id: supabaseUser.id,
+        email: supabaseUser.email,
+        oauthSub: supabaseUser.id,
+        firstName: nameParts[0] || null,
+        lastName: nameParts.slice(1).join(" ") || null,
+        profileImageUrl: supabaseUser.user_metadata?.avatar_url || null,
+      }).onConflictDoNothing();
+      
+      console.log(`[AUTH] Created new user record for ${supabaseUser.email}`);
+    }
+  } catch (error) {
+    console.error("[AUTH ERROR] Failed to ensure user exists:", error);
+    // Don't throw - let the request continue even if user creation fails
+  }
+}
+
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -57,10 +91,14 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
+    // Ensure user exists in public.users table
+    await ensureUserExists(user);
+
     // Attach user to request for use in protected routes
     (req as any).user = user;
     next();
   } catch (error) {
+    console.error("[AUTH ERROR] Authentication middleware failed:", error);
     res.status(401).json({ message: "Unauthorized" });
   }
 };
